@@ -1,5 +1,5 @@
 [package]
-name = "elder-clerical-bot"
+name = "holodoc"
 version = "0.1.0"
 authors = ["Micah Resnick <resnickmicah@gmail.com>"]
 edition = "2018"
@@ -10,3 +10,4 @@ edition = "2018"
 serenity = "0.10"
 tokio = { version = "1", features = ["full"] }
 mini-redis = "0.4"
+rand = "0.8.2"
