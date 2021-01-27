@@ -13,7 +13,7 @@ use serenity::framework::standard::{
 use rand::seq::SliceRandom;
 
 use std::env;
-const HEALTHY: &[&str] = &["Japanese", "Mediterranean", "Soup and Salad", "Juicy Kitchen", "Noodles & Co."];
+const HEALTHY: &[&str] = &["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."];
 const LESS_HEALTHY: &[&str] = &["Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli"];
 const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's", ];
 
