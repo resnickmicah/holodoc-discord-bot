@@ -15,7 +15,8 @@ use rand::seq::SliceRandom;
 use std::env;
 const HEALTHY: &[&str] = &["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."];
 const LESS_HEALTHY: &[&str] = &["Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli"];
-const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's", ];
+const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's"];
+const LOCAL: &[&str] = &["Le dog + La soup", "NYPD", "Sava's", "Jerusalem Garden", "Detroit Street Filling Station", "Mani Osteria and Bar", "Afternoon Delight", "Ashley's", "HopCat", "Zingerman's", "Avalon", "Kouzina", "Isalita"];
 
 #[group]
 #[commands(feedme)]
@@ -54,11 +55,12 @@ async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
         "healthy" => HEALTHY.to_vec(),
         "unhealthy" => LESS_HEALTHY.to_vec(),
         "junk" => FAST_FOOD.to_vec(),
-        _ => vec!["Invalid argument. Please choose healthy, unhealthy, or junk"],
+        "local" => LOCAL.to_vec(),
+        _ => vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local"],
         }
 
     } else {
-        HEALTHY.iter().chain(LESS_HEALTHY).chain(FAST_FOOD).map(|sa| *sa).collect()
+        HEALTHY.iter().chain(LESS_HEALTHY).chain(FAST_FOOD).chain(LOCAL).map(|sa| *sa).collect()
     };
     let resp = food_options.choose(&mut rand::thread_rng()).unwrap().to_string();
     if let Err(why) = msg.reply(ctx, resp).await {
