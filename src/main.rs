@@ -14,7 +14,7 @@ use rand::seq::SliceRandom;
 
 use std::env;
 const HEALTHY: &[&str] = &["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."];
-const LESS_HEALTHY: &[&str] = &["Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli"];
+const LESS_HEALTHY: &[&str] = &["Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli", "Coney"];
 const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's"];
 const LOCAL: &[&str] = &["Le dog + La soup", "NYPD", "Sava's", "Jerusalem Garden", "Detroit Street Filling Station", "Mani Osteria and Bar", "Afternoon Delight", "Ashley's", "HopCat", "Zingerman's", "Avalon", "Kouzina", "Isalita"];
 
