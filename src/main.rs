@@ -1,22 +1,38 @@
+use rand::seq::SliceRandom;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
-use serenity::model::channel::Message;
 use serenity::framework::standard::{
-    StandardFramework,
-    CommandResult,
-    Args,
-    macros::{
-        command,
-        group
-    }
+    macros::{command, group},
+    Args, CommandResult, StandardFramework,
 };
-use rand::seq::SliceRandom;
+use serenity::model::channel::Message;
 
 use std::env;
-const HEALTHY: &[&str] = &["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."];
-const LESS_HEALTHY: &[&str] = &["Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli", "Coney"];
+const HEALTHY: &[&str] = &[
+    "Japanese",
+    "Mediterranean",
+    "Soup and Salad",
+    "Noodles & Co.",
+];
+const LESS_HEALTHY: &[&str] = &[
+    "Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli", "Coney",
+];
 const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's"];
-const LOCAL: &[&str] = &["Le dog + La soup", "NYPD", "Sava's", "Jerusalem Garden", "Detroit Street Filling Station", "Mani Osteria and Bar", "Afternoon Delight", "Ashley's", "HopCat", "Zingerman's", "Avalon", "Kouzina", "Isalita"];
+const LOCAL: &[&str] = &[
+    "Le dog + La soup",
+    "NYPD",
+    "Sava's",
+    "Jerusalem Garden",
+    "Detroit Street Filling Station",
+    "Mani Osteria and Bar",
+    "Afternoon Delight",
+    "Ashley's",
+    "HopCat",
+    "Zingerman's",
+    "Avalon",
+    "Kouzina",
+    "Isalita",
+];
 
 #[group]
 #[commands(feedme)]
@@ -52,19 +68,30 @@ async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let food_options: Vec<&str> = if args.len() > 0 {
         let health_level = args.single::<String>()?;
         match health_level.as_str() {
-        "healthy" => HEALTHY.to_vec(),
-        "unhealthy" => LESS_HEALTHY.to_vec(),
-        "junk" => FAST_FOOD.to_vec(),
-        "local" => LOCAL.to_vec(),
-        _ => vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local"],
+            "healthy" => HEALTHY.to_vec(),
+            "unhealthy" => LESS_HEALTHY.to_vec(),
+            "junk" => FAST_FOOD.to_vec(),
+            "local" => LOCAL.to_vec(),
+            _ => vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local"],
         }
-
     } else {
-        HEALTHY.iter().chain(LESS_HEALTHY).chain(FAST_FOOD).chain(LOCAL).map(|sa| *sa).collect()
+        HEALTHY
+            .iter()
+            .chain(LESS_HEALTHY)
+            .chain(FAST_FOOD)
+            .chain(LOCAL)
+            .map(|sa| *sa)
+            .collect()
     };
-    let resp = food_options.choose(&mut rand::thread_rng()).unwrap().to_string();
+    let resp = food_options
+        .choose(&mut rand::thread_rng())
+        .unwrap()
+        .to_string();
     if let Err(why) = msg.reply(ctx, resp).await {
-        println!("An error occurred while trying to process !feedme: {:?}", why);
+        println!(
+            "An error occurred while trying to process !feedme: {:?}",
+            why
+        );
     }
 
     Ok(())
