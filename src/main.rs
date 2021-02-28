@@ -2,8 +2,8 @@
  * Imports
 ======================================== */
 mod lib;
-use lib::commands::*;
 use dotenv;
+use lib::commands::*;
 
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
@@ -27,7 +27,6 @@ const BOT_PREFIX: &str = "!!";
 /* ========================================
  * Program
 ======================================== */
-
 #[group]
 #[commands(feedme, cronreminder)]
 pub struct General;

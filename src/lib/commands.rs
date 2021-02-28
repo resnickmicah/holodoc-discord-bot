@@ -1,6 +1,5 @@
+use super::structs::{Eateries, Foods};
 use super::*;
-use super::structs::{Foods, Eateries};
-
 
 /**
  * Feedme
