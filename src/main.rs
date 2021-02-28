@@ -1,4 +1,13 @@
+/* ========================================
+ * Imports
+======================================== */
+mod lib;
+use dotenv;
+use lib::commands::*;
+
 use rand::seq::SliceRandom;
+use serde::{Deserialize, Serialize};
+use serde_json as json;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
 use serenity::framework::standard::{
@@ -7,38 +16,20 @@ use serenity::framework::standard::{
 };
 use serenity::model::channel::Message;
 
-use std::env;
-const HEALTHY: &[&str] = &[
-    "Japanese",
-    "Mediterranean",
-    "Soup and Salad",
-    "Noodles & Co.",
-];
-const LESS_HEALTHY: &[&str] = &[
-    "Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli", "Coney",
-];
-const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's"];
-const LOCAL: &[&str] = &[
-    "Le dog + La soup",
-    "NYPD",
-    "Sava's",
-    "Jerusalem Garden",
-    "Detroit Street Filling Station",
-    "Mani Osteria and Bar",
-    "Afternoon Delight",
-    "Ashley's",
-    "HopCat",
-    "Zingerman's",
-    "Avalon",
-    "Kouzina",
-    "Isalita",
-];
+use std::fs;
+use std::{env, path::Path};
 
+/* ========================================
+ * Consts
+======================================== */
 const BOT_PREFIX: &str = "!!";
 
+/* ========================================
+ * Program
+======================================== */
 #[group]
 #[commands(feedme, cronreminder)]
-struct General;
+pub struct General;
 
 struct Handler;
 
@@ -47,12 +38,14 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix(BOT_PREFIX)) // set the bot's prefix to "!!"
         .group(&GENERAL_GROUP);
 
     // Login with a bot token from the environment
-    let token = env::var("DISCORD_HD_TOKEN").expect("token");
+    let token = env::var("TOKEN").expect("token");
     let mut client = Client::builder(token)
         .event_handler(Handler)
         .framework(framework)
@@ -63,62 +56,4 @@ async fn main() {
     if let Err(why) = client.start().await {
         println!("An error occurred while running the client: {:?}", why);
     }
-}
-
-#[command]
-async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let food_options: Vec<&str> = if args.len() > 0 {
-        let health_level = args.single::<String>()?;
-        match health_level.as_str() {
-            "healthy" => HEALTHY.to_vec(),
-            "unhealthy" => LESS_HEALTHY.to_vec(),
-            "junk" => FAST_FOOD.to_vec(),
-            "local" => LOCAL.to_vec(),
-            _ => vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local"],
-        }
-    } else {
-        HEALTHY
-            .iter()
-            .chain(LESS_HEALTHY)
-            .chain(FAST_FOOD)
-            .chain(LOCAL)
-            .map(|sa| *sa)
-            .collect()
-    };
-    let resp = food_options
-        .choose(&mut rand::thread_rng())
-        .unwrap()
-        .to_string();
-    if let Err(why) = msg.reply(ctx, resp).await {
-        println!(
-            "An error occurred while trying to process feedme: {:?}",
-            why
-        );
-    }
-
-    Ok(())
-}
-
-#[command]
-async fn cronreminder(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
-    println!("The message to cronreminder command: {:?}", args.message());
-    let args = Args::new(args.message(), &[Delimiter::Single('|')]);
-    let parsed_args: Vec<&str> = args.raw().collect::<Vec<&str>>();
-    let resp = if parsed_args.len() == 3 {
-        let (cron, reminder, channel) = (parsed_args[0], parsed_args[1], parsed_args[2]);
-        format!(
-            "cron: {:}\nreminder: {:}\nchannel: {:}\n",
-            cron, reminder, channel
-        )
-    } else {
-        format!("Invalid arguments: {:}", args.message())
-    };
-    if let Err(why) = msg.reply(ctx, resp).await {
-        println!(
-            "An error occurred while trying to process {:}cronreminder: {:?}",
-            BOT_PREFIX, why,
-        );
-    }
-
-    Ok(())
 }

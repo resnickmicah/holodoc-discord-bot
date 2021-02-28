@@ -1,0 +1,13 @@
+{
+    "healthy": ["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."],
+    "less_healthy": [
+        "Mexican",
+        "Thai",
+        "Chinese",
+        "Barbecue",
+        "Korean",
+        "Deli",
+        "Coney"
+    ],
+    "fast_food": ["Wendy's", "Taco Bell", "Culver's"]
+}
