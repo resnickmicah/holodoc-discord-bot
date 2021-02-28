@@ -3,6 +3,7 @@
 ======================================== */
 mod lib;
 use lib::commands::*;
+use dotenv;
 
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
@@ -38,12 +39,14 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix(BOT_PREFIX)) // set the bot's prefix to "!!"
         .group(&GENERAL_GROUP);
 
     // Login with a bot token from the environment
-    let token = env::var("DISCORD_HD_TOKEN").expect("token");
+    let token = env::var("TOKEN").expect("token");
     let mut client = Client::builder(token)
         .event_handler(Handler)
         .framework(framework)
