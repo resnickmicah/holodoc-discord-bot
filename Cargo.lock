@@ -433,6 +433,8 @@ version = "0.1.0"
 dependencies = [
  "mini-redis",
  "rand 0.8.2",
+ "serde",
+ "serde_json",
  "serenity",
  "tokio",
 ]

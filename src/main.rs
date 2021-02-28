@@ -1,4 +1,10 @@
+/* ========================================
+ * Imports
+======================================== */
+mod lib;
 use rand::seq::SliceRandom;
+use serde::{Deserialize, Serialize};
+use serde_json as json;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
 use serenity::framework::standard::{
@@ -7,35 +13,29 @@ use serenity::framework::standard::{
 };
 use serenity::model::channel::Message;
 
-use std::env;
-const HEALTHY: &[&str] = &[
-    "Japanese",
-    "Mediterranean",
-    "Soup and Salad",
-    "Noodles & Co.",
-];
-const LESS_HEALTHY: &[&str] = &[
-    "Mexican", "Thai", "Chinese", "Barbecue", "Korean", "Deli", "Coney",
-];
-const FAST_FOOD: &[&str] = &["Wendy's", "Taco Bell", "Culver's"];
-const LOCAL: &[&str] = &[
-    "Le dog + La soup",
-    "NYPD",
-    "Sava's",
-    "Jerusalem Garden",
-    "Detroit Street Filling Station",
-    "Mani Osteria and Bar",
-    "Afternoon Delight",
-    "Ashley's",
-    "HopCat",
-    "Zingerman's",
-    "Avalon",
-    "Kouzina",
-    "Isalita",
-];
+use std::fs;
+use std::{env, path::Path};
+
+/* ========================================
+ * Consts
+======================================== */
+#[derive(Serialize, Deserialize)]
+struct Eateries {
+    names: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Foods {
+    healthy: Vec<String>,
+    less_healthy: Vec<String>,
+    fast_food: Vec<String>,
+}
 
 const BOT_PREFIX: &str = "!!";
 
+/* ========================================
+ * Program
+======================================== */
 #[group]
 #[commands(feedme, cronreminder)]
 struct General;
@@ -65,35 +65,45 @@ async fn main() {
     }
 }
 
+/* ========================================
+ * Commands
+======================================== */
 #[command]
 async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let food_options: Vec<&str> = if args.len() > 0 {
+    let foods = &fs::read_to_string(Path::new("./db/foods.json")).expect("Couldn't read file.");
+    let foods: Foods = json::from_str(foods)?;
+
+    let eatery = &fs::read_to_string(Path::new("./db/eatery.json")).expect("Couldn't read file.");
+    let eatery: Eateries = json::from_str(eatery)?;
+
+    let food_options: Vec<String> = if args.len() > 0 {
         let health_level = args.single::<String>()?;
         match health_level.as_str() {
-            "healthy" => HEALTHY.to_vec(),
-            "unhealthy" => LESS_HEALTHY.to_vec(),
-            "junk" => FAST_FOOD.to_vec(),
-            "local" => LOCAL.to_vec(),
-            _ => vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local"],
+            "healthy" => foods.healthy,
+            "unhealthy" => foods.less_healthy,
+            "junk" => foods.fast_food,
+            "local" => eatery.names,
+            _ => vec![String::from(
+                "Invalid argument. Please choose healthy, unhealthy, junk, or local",
+            )],
         }
     } else {
-        HEALTHY
-            .iter()
-            .chain(LESS_HEALTHY)
-            .chain(FAST_FOOD)
-            .chain(LOCAL)
-            .map(|sa| *sa)
+        foods
+            .healthy
+            .into_iter()
+            .chain(foods.less_healthy.into_iter())
+            .chain(foods.fast_food.into_iter())
+            .chain(eatery.names.into_iter())
             .collect()
     };
+
     let resp = food_options
         .choose(&mut rand::thread_rng())
         .unwrap()
         .to_string();
-    if let Err(why) = msg.reply(ctx, resp).await {
-        println!(
-            "An error occurred while trying to process feedme: {:?}",
-            why
-        );
+
+    if let Err(e) = msg.reply(ctx, resp).await {
+        println!("An error occurred while trying to process feedme: {:?}", e);
     }
 
     Ok(())
@@ -102,6 +112,7 @@ async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 #[command]
 async fn cronreminder(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     println!("The message to cronreminder command: {:?}", args.message());
+
     let args = Args::new(args.message(), &[Delimiter::Single('|')]);
     let parsed_args: Vec<&str> = args.raw().collect::<Vec<&str>>();
     let resp = if parsed_args.len() == 3 {
@@ -113,6 +124,7 @@ async fn cronreminder(ctx: &Context, msg: &Message, args: Args) -> CommandResult
     } else {
         format!("Invalid arguments: {:}", args.message())
     };
+
     if let Err(why) = msg.reply(ctx, resp).await {
         println!(
             "An error occurred while trying to process {:}cronreminder: {:?}",
