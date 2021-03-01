@@ -1,4 +1,3 @@
-use super::structs::{Eateries, Foods};
 use super::*;
 
 /**
@@ -6,11 +5,19 @@ use super::*;
  */
 #[command]
 pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let foods = &fs::read_to_string(Path::new("./db/foods.json")).expect("Couldn't read file.");
-    let foods: Foods = json::from_str(foods).expect("Couldn't parse json.");
+    let foods = {
+        let data = ctx.data.read().await;
+        let lock = data.get::<FoodsState>().expect("");
+        let value = lock.read().await;
+        value.get(&"foods".to_string()).unwrap().clone()
+    };
 
-    let eatery = &fs::read_to_string(Path::new("./db/eatery.json")).expect("Couldn't read file.");
-    let eatery: Eateries = json::from_str(eatery).expect("Couldn't parse json.");
+    let eatery = {
+        let data = ctx.data.read().await;
+        let lock = data.get::<EateryState>().expect("");
+        let value = lock.read().await;
+        value.get(&"eatery".to_string()).unwrap().clone()
+    };
 
     let food_options: Vec<String> = if args.len() > 0 {
         let health_level = args.single::<String>()?;
