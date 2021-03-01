@@ -438,6 +438,7 @@ name = "holodoc"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "lazy_static",
  "mini-redis",
  "rand 0.8.2",
  "serde",

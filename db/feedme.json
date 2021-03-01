@@ -1,5 +1,16 @@
 {
-    "names": [
+    "healthy": ["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."],
+    "unhealthy": [
+        "Mexican",
+        "Thai",
+        "Chinese",
+        "Barbecue",
+        "Korean",
+        "Deli",
+        "Coney"
+    ],
+    "junk": ["Wendy's", "Taco Bell", "Culver's"],
+    "local": [
         "Le dog + La soup",
         "NYPD",
         "Sava's",
