@@ -1,13 +1,9 @@
 use super::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Eateries {
-    pub names: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Foods {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FeedMe {
     pub healthy: Vec<String>,
-    pub less_healthy: Vec<String>,
-    pub fast_food: Vec<String>,
+    pub unhealthy: Vec<String>,
+    pub junk: Vec<String>,
+    pub local: Vec<String>,
 }
