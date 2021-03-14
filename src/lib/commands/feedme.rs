@@ -4,6 +4,9 @@ use super::*;
  * Feedme
  */
 #[command]
+#[description = "Find a restaurant in Ann Arbor for lunch or dinner.\n\
+    With no args, selects a random restaurant type or specific restaurant.\n\
+    Possible args are healthy, unhealthy, junk, or local."]
 pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let food_options: Vec<String> = if args.len() > 0 {
         let health_level = args.single::<String>()?;

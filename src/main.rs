@@ -1,6 +1,7 @@
 /* ========================================
  * Imports
 ======================================== */
+use std::collections::HashSet;
 use std::env;
 
 use dotenv;
@@ -13,14 +14,16 @@ use serde_json as json;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
 use serenity::framework::standard::{
-    macros::{command, group},
-    Args, CommandResult, Delimiter, StandardFramework,
+    help_commands,
+    macros::{command, group, help},
+    Args, CommandGroup, CommandResult, Delimiter, HelpOptions, StandardFramework,
 };
 use serenity::model::channel::Message;
+use serenity::model::id::UserId;
 
 mod lib;
 use lib::{
-    commands::{cronreminder::*, feedme::*},
+    commands::{cronreminder::*, feedme::*, help::*},
     data::*,
     structs::FeedMe,
 };
@@ -51,7 +54,8 @@ async fn main() {
 
     let framework = StandardFramework::new()
         .configure(|c| c.prefix(BOT_PREFIX)) // set the bot's prefix to "!!"
-        .group(&GENERAL_GROUP);
+        .group(&GENERAL_GROUP)
+        .help(&MY_HELP);
 
     // Login with a bot token from the environment
     let token = env::var("TOKEN").expect("token");

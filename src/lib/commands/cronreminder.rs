@@ -4,7 +4,10 @@ use super::*;
  * Cronreminder
  */
 #[command]
-async fn cronreminder(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+#[description = "Set up a reminder on a regular cadence according to crontab syntax.\n\
+    cron [cadence] [reminder message text] [Discord channel]\n\
+    Cron examples and analyzer can be found here: https://crontab.guru/"]
+pub async fn cronreminder(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     println!("The message to cronreminder command: {:?}", args.message());
 
     let args = Args::new(args.message(), &[Delimiter::Single('|')]);
