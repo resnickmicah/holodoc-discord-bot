@@ -1,22 +1,29 @@
 /* ========================================
  * Imports
 ======================================== */
-mod lib;
+use std::env;
+
 use dotenv;
-use lib::{commands::*, data::*, structs::FeedMe};
 
 use rand::seq::SliceRandom;
+
 use serde::{Deserialize, Serialize};
 use serde_json as json;
+
+use serenity::async_trait;
+use serenity::client::{Client, Context, EventHandler};
 use serenity::framework::standard::{
     macros::{command, group},
     Args, CommandResult, Delimiter, StandardFramework,
 };
 use serenity::model::channel::Message;
-use serenity::async_trait;
-use serenity::client::{Client, Context, EventHandler};
 
-use std::env;
+mod lib;
+use lib::{
+    commands::{cronreminder::*, feedme::*},
+    data::*,
+    structs::FeedMe,
+};
 
 #[macro_use]
 extern crate lazy_static;
