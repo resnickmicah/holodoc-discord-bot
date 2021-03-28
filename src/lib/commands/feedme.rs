@@ -20,13 +20,15 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
             ),
         }
     } else {
-        HashSet::from_iter([
-            FEEDME.healthy.clone(),
-            FEEDME.unhealthy.clone(),
-            FEEDME.junk.clone(),
-            FEEDME.local.clone(),
-        ]
-        .concat())
+        HashSet::from_iter(
+            [
+                FEEDME.healthy.clone(),
+                FEEDME.unhealthy.clone(),
+                FEEDME.junk.clone(),
+                FEEDME.local.clone(),
+            ]
+            .concat(),
+        )
     };
 
     let resp = Vec::from_iter(food_options)

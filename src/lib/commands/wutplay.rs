@@ -1,7 +1,7 @@
 use super::*;
 
 /**
- * Feedme
+ * Wutplay
  */
 #[command]
 #[aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")]
@@ -26,17 +26,19 @@ pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandRes
             ),
         }
     } else {
-        HashSet::from_iter([
-            WUTPLAY.vr.clone(),
-            WUTPLAY.jrpg.clone(),
-            WUTPLAY.arpg.clone(),
-            WUTPLAY.coop.clone(),
-            WUTPLAY.shooter.clone(),
-            WUTPLAY.ragequit.clone(),
-            WUTPLAY.tactics.clone(),
-            WUTPLAY.chill.clone(),
-        ]
-        .concat())
+        HashSet::from_iter(
+            [
+                WUTPLAY.vr.clone(),
+                WUTPLAY.jrpg.clone(),
+                WUTPLAY.arpg.clone(),
+                WUTPLAY.coop.clone(),
+                WUTPLAY.shooter.clone(),
+                WUTPLAY.ragequit.clone(),
+                WUTPLAY.tactics.clone(),
+                WUTPLAY.chill.clone(),
+            ]
+            .concat(),
+        )
     };
 
     let resp = Vec::from_iter(food_options)

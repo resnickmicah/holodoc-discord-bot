@@ -2,8 +2,8 @@
  * Imports
 ======================================== */
 use std::collections::HashSet;
-use std::iter::FromIterator;
 use std::env;
+use std::iter::FromIterator;
 
 use dotenv;
 
@@ -24,7 +24,7 @@ use serenity::model::id::UserId;
 
 mod lib;
 use lib::{
-    commands::{cronreminder::*, feedme::*, help::*, wutplay::*},
+    commands::{cronreminder::*, feedme::*, help::*, wutplay::*, compiling::*},
     data::*,
     structs::{FeedMe, WutPlay},
 };
@@ -41,7 +41,7 @@ const BOT_PREFIX: &str = "!!";
  * Program
 ======================================== */
 #[group]
-#[commands(feedme, cronreminder, wutplay)]
+#[commands(feedme, cronreminder, wutplay, compiling)]
 pub struct General;
 
 struct Handler;
