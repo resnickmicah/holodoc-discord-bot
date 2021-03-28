@@ -4,6 +4,7 @@ use super::*;
  * Feedme
  */
 #[command]
+#[aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")]
 #[description = "Pick a game to play\n\
     With no args, selects a random game among all tags.\n\
     Possible genres are vr, jrpg, arpg, coop, shooter, ragequit, tactics, and chill."]
