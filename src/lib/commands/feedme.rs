@@ -8,28 +8,28 @@ use super::*;
     With no args, selects a random restaurant type or specific restaurant.\n\
     Possible args are healthy, unhealthy, junk, or local."]
 pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let food_options: Vec<String> = if args.len() > 0 {
+    let food_options: HashSet<String> = if args.len() > 0 {
         let health_level = args.single::<String>()?;
         match health_level.as_str() {
-            "healthy" => FEEDME.healthy.clone(),
-            "unhealthy" => FEEDME.unhealthy.clone(),
-            "junk" => FEEDME.junk.clone(),
-            "local" => FEEDME.local.clone(),
-            _ => vec![
-                "Invalid argument. Please choose healthy, unhealthy, junk, or local".to_string(),
-            ],
+            "healthy" => HashSet::from_iter(FEEDME.healthy.clone()),
+            "unhealthy" => HashSet::from_iter(FEEDME.unhealthy.clone()),
+            "junk" => HashSet::from_iter(FEEDME.junk.clone()),
+            "local" => HashSet::from_iter(FEEDME.local.clone()),
+            _ => HashSet::from_iter(
+                vec!["Invalid argument. Please choose vr, jrpg, arpg, coop, shooter, ragequit, tactics, or chill.".to_string()]
+            ),
         }
     } else {
-        [
+        HashSet::from_iter([
             FEEDME.healthy.clone(),
             FEEDME.unhealthy.clone(),
             FEEDME.junk.clone(),
             FEEDME.local.clone(),
         ]
-        .concat()
+        .concat())
     };
 
-    let resp = food_options
+    let resp = Vec::from_iter(food_options)
         .choose(&mut rand::thread_rng())
         .unwrap()
         .to_string();

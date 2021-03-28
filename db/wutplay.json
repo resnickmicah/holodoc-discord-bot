@@ -1,0 +1,56 @@
+{
+    "vr": [
+        "Star Wars Squadrons",
+        "Beat Saber",
+        "Elite Dangerous",
+        "Space Pirate Trainer",
+        "Keep Talking and Nobody Explodes"
+    ],
+    "jrpg": [
+        "Nier Automata",
+        "Final Fantasy XII",
+        "Octopath Traveler",
+        "Genshin Impact"
+    ],
+    "arpg": [
+        "Fallout 4",
+        "Spiritfarer",
+        "Pit People",
+        "Littlewood"
+    ],
+    "coop": [
+        "Destiny 2",
+        "Don't Starve Together",
+        "Borderlands 2",
+        "Risk of Rain 2",
+        "Valheim",
+        "Genshin Impact",
+        "Ark Survival Evolved",
+        "Sea of Thieves",
+        "Deep Rock Galactic",
+        "Stardew Valley"
+    ],
+    "shooter": [
+        "Superhot: Mind Ctrl Delete",
+        "Superhot VR",
+        "Destiny 2",
+        "Dishonored",
+        "Dishonored 2",
+        ""
+    ],
+    "ragequit": [
+        "Getting Over It",
+        "Kerbal Space Program"
+    ],
+    "tactics": [
+        "Shadow Tactics",
+        "Desperados 3",
+        "Pit People"
+    ],
+    "chill": [
+        "Spiritfarer",
+        "Donut County",
+        "Littlewood",
+        "Stardew Valley"
+    ]
+}

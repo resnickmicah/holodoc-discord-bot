@@ -7,3 +7,11 @@ lazy_static! {
         feedme
     };
 }
+
+lazy_static! {
+    pub static ref WUTPLAY: WutPlay = {
+        let wutplay = include_str!("../../db/wutplay.json");
+        let wutplay: WutPlay = json::from_str(wutplay).expect("Couldn't parse json.");
+        wutplay
+    };
+}
