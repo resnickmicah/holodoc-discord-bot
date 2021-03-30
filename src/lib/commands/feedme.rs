@@ -16,7 +16,7 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
             "junk" => HashSet::from_iter(FEEDME.junk.clone()),
             "local" => HashSet::from_iter(FEEDME.local.clone()),
             _ => HashSet::from_iter(
-                vec!["Invalid argument. Please choose vr, jrpg, arpg, coop, shooter, ragequit, tactics, or chill.".to_string()]
+                vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local.".to_string()]
             ),
         }
     } else {
