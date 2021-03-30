@@ -18,4 +18,5 @@ pub struct WutPlay {
     pub ragequit: Vec<String>,
     pub tactics: Vec<String>,
     pub chill: Vec<String>,
+    pub space: Vec<String>,
 }

@@ -7,7 +7,7 @@ use super::*;
 #[aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")]
 #[description = "Pick a game to play\n\
     With no args, selects a random game among all tags.\n\
-    Possible genres are vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, and chill."]
+    Possible genres are vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, and chill."]
 pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let food_options: HashSet<String> = if args.len() > 0 {
         let health_level = args.single::<String>()?;
@@ -21,8 +21,9 @@ pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandRes
             "ragequit" => HashSet::from_iter(WUTPLAY.ragequit.clone()),
             "tactics" => HashSet::from_iter(WUTPLAY.tactics.clone()),
             "chill" => HashSet::from_iter(WUTPLAY.chill.clone()),
+            "space" => HashSet::from_iter(WUTPLAY.space.clone()),
             _ => HashSet::from_iter(
-                vec!["Invalid argument. Please choose vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, or chill.".to_string()]
+                vec!["Invalid argument. Please choose vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, or chill.".to_string()]
             ),
         }
     } else {
@@ -36,6 +37,7 @@ pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandRes
                 WUTPLAY.ragequit.clone(),
                 WUTPLAY.tactics.clone(),
                 WUTPLAY.chill.clone(),
+                WUTPLAY.space.clone(),
             ]
             .concat(),
         )
