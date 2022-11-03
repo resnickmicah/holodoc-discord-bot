@@ -15,9 +15,9 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
             "unhealthy" => HashSet::from_iter(FEEDME.unhealthy.clone()),
             "junk" => HashSet::from_iter(FEEDME.junk.clone()),
             "local" => HashSet::from_iter(FEEDME.local.clone()),
-            _ => HashSet::from_iter(
-                vec!["Invalid argument. Please choose healthy, unhealthy, junk, or local.".to_string()]
-            ),
+            _ => HashSet::from_iter(vec![
+                "Invalid argument. Please choose healthy, unhealthy, junk, or local.".to_string(),
+            ]),
         }
     } else {
         HashSet::from_iter(

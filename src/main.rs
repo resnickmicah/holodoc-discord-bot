@@ -24,7 +24,7 @@ use serenity::model::id::UserId;
 
 mod lib;
 use lib::{
-    commands::{cronreminder::*, feedme::*, help::*, wutplay::*, compiling::*},
+    commands::{compiling::*, cronreminder::*, feedme::*, help::*, wutplay::*},
     data::*,
     structs::{FeedMe, WutPlay},
 };
