@@ -22,8 +22,8 @@ use serenity::framework::standard::{
 use serenity::model::channel::Message;
 use serenity::model::id::UserId;
 
-mod lib;
-use lib::{
+mod holodoc;
+use holodoc::{
     commands::{compiling::*, cronreminder::*, feedme::*, help::*, wutplay::*},
     data::*,
     structs::{FeedMe, WutPlay},
