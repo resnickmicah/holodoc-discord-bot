@@ -1,5 +1,11 @@
 {
-    "healthy": ["Japanese", "Mediterranean", "Soup and Salad", "Noodles & Co."],
+    "healthy": [
+        "Japanese",
+        "Mediterranean", 
+        "Soup and Salad", 
+        "Noodles & Co.", 
+        "Juicy Kitchen"
+    ],
     "unhealthy": [
         "Mexican",
         "Thai",
@@ -23,6 +29,7 @@
         "Zingerman's",
         "Avalon",
         "Kouzina",
-        "Isalita"
+        "Isalita",
+        "Kosmo's"
     ]
 }
