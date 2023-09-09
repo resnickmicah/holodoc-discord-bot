@@ -8,6 +8,8 @@ use std::iter::FromIterator;
 use dotenv;
 
 use rand::seq::SliceRandom;
+use rand::thread_rng;
+use rand::Rng;
 
 use serde::{Deserialize, Serialize};
 use serde_json as json;
@@ -24,7 +26,7 @@ use serenity::model::id::UserId;
 
 mod holodoc;
 use holodoc::{
-    commands::{compiling::*, cronreminder::*, feedme::*, help::*, wutplay::*},
+    commands::{compiling::*, cronreminder::*, feedme::*, help::*, pick::*, roll::*, wutplay::*},
     data::*,
     structs::{FeedMe, WutPlay},
 };
@@ -41,7 +43,7 @@ const BOT_PREFIX: &str = "!!";
  * Program
 ======================================== */
 #[group]
-#[commands(feedme, cronreminder, wutplay, compiling)]
+#[commands(feedme, cronreminder, wutplay, compiling, pick, roll)]
 pub struct General;
 
 struct Handler;
