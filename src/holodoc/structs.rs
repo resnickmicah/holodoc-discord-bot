@@ -19,4 +19,5 @@ pub struct WutPlay {
     pub tactics: Vec<String>,
     pub chill: Vec<String>,
     pub space: Vec<String>,
+    pub steamdeck: Vec<String>,
 }

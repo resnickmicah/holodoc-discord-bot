@@ -17,8 +17,9 @@ pub async fn wutplay(ctx: Context<'_>, genre: Option<String>) -> Result<(), Erro
             "tactics" => HashSet::from_iter(WUTPLAY.tactics.clone()),
             "chill" => HashSet::from_iter(WUTPLAY.chill.clone()),
             "space" => HashSet::from_iter(WUTPLAY.space.clone()),
+            "steamdeck" => HashSet::from_iter(WUTPLAY.steamdeck.clone()),
             _ => HashSet::from_iter(
-                vec!["Invalid argument. Please choose vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, or chill.".to_string()]
+                vec!["Invalid argument. Please choose vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, steamdeck, or chill.".to_string()]
             ),
         },
         None => HashSet::from_iter(

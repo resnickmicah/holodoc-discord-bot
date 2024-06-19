@@ -16,17 +16,15 @@
         "Fallout 4",
         "Spiritfarer",
         "Pit People",
-        "Littlewood"
+        "Littlewood",
+        "Hades 2"
     ],
     "coop": [
         "Destiny 2",
+        "Fallout 76",
         "Don't Starve Together",
         "Borderlands 2",
         "Risk of Rain 2",
-        "Valheim",
-        "Genshin Impact",
-        "Ark Survival Evolved",
-        "Sea of Thieves",
         "Deep Rock Galactic",
         "Stardew Valley"
     ],
@@ -58,5 +56,27 @@
         "Destiny 2",
         "Star Wars Squadrons",
         "Space Pirate Trainer"
+    ],
+    "steamdeck": [
+        "Hades",
+        "Stardew Valley",
+        "L4D2",
+        "One Finger Death Punch",
+        "Pseudoregalia",
+        "Castle Crashers",
+        "Doom",
+        "Hades 2",
+        "Valheim",
+        "Hyper Light Drifter",
+        "Palworld",
+        "Final Fantasy X",
+        "Final Fantasy X-2",
+        "Hardspace Shipbreaker",
+        "Filament",
+        "Pillars of Eternity 2: Deadfire",
+        "Fallout 4",
+        "Overgrowth",
+        "Fallout 76",
+        "System Shock Classic"
     ]
 }
