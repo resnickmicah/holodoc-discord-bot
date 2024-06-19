@@ -1,17 +1,12 @@
 use super::*;
-
-/**
- * Wutplay
- */
-#[command]
-#[aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")]
-#[description = "Pick a game to play\n\
-    With no args, selects a random game among all tags.\n\
-    Possible genres are vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, and chill."]
-pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let food_options: HashSet<String> = if args.len() > 0 {
-        let health_level = args.single::<String>()?;
-        match health_level.as_str() {
+/// Pick a game to play. With no args, selects a random game among all tags.
+#[poise::command(
+    slash_command,
+    aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")
+)]
+pub async fn wutplay(ctx: Context<'_>, genre: Option<String>) -> Result<(), Error> {
+    let game_options: HashSet<String> = match genre {
+        Some(genre) => match genre.as_str() {
             "vr" => HashSet::from_iter(WUTPLAY.vr.clone()),
             "jrpg" => HashSet::from_iter(WUTPLAY.jrpg.clone()),
             "arpg" => HashSet::from_iter(WUTPLAY.arpg.clone()),
@@ -25,9 +20,8 @@ pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandRes
             _ => HashSet::from_iter(
                 vec!["Invalid argument. Please choose vr, rpg, jrpg, arpg, coop, shooter, ragequit, tactics, space, or chill.".to_string()]
             ),
-        }
-    } else {
-        HashSet::from_iter(
+        },
+        None => HashSet::from_iter(
             [
                 WUTPLAY.vr.clone(),
                 WUTPLAY.jrpg.clone(),
@@ -43,14 +37,12 @@ pub async fn wutplay(ctx: &Context, msg: &Message, mut args: Args) -> CommandRes
         )
     };
 
-    let resp = Vec::from_iter(food_options)
+    let resp = Vec::from_iter(game_options)
         .choose(&mut rand::thread_rng())
         .unwrap()
         .to_string();
 
-    if let Err(e) = msg.reply(ctx, resp).await {
-        println!("An error occurred while trying to process feedme: {:?}", e);
-    }
+    ctx.say(resp).await?;
 
     Ok(())
 }

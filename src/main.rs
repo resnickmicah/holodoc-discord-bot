@@ -2,7 +2,6 @@
  * Imports
 ======================================== */
 use std::collections::HashSet;
-use std::env;
 use std::iter::FromIterator;
 
 use dotenv;
@@ -14,19 +13,13 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 
+use poise::serenity_prelude as serenity;
 use serenity::async_trait;
-use serenity::client::{Client, Context, EventHandler};
-use serenity::framework::standard::{
-    help_commands,
-    macros::{command, group, help},
-    Args, CommandGroup, CommandResult, Delimiter, HelpOptions, StandardFramework,
-};
-use serenity::model::channel::Message;
-use serenity::model::id::UserId;
+use serenity::client::EventHandler;
 
 mod holodoc;
 use holodoc::{
-    commands::{compiling::*, cronreminder::*, feedme::*, help::*, pick::*, roll::*, wutplay::*},
+    commands::{compiling::*, cronreminder::*, feedme::*, pick::*, roll::*, wutplay::*},
     data::*,
     structs::{FeedMe, WutPlay},
 };
@@ -42,34 +35,50 @@ const BOT_PREFIX: &str = "!!";
 /* ========================================
  * Program
 ======================================== */
-#[group]
-#[commands(feedme, cronreminder, wutplay, compiling, pick, roll)]
-pub struct General;
 
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {}
 
+struct Data {} // User data, which is stored and accessible in all command invocations
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, Error>;
+
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
 
-    let framework = StandardFramework::new()
-        .configure(|c| c.prefix(BOT_PREFIX)) // set the bot's prefix to "!!"
-        .group(&GENERAL_GROUP)
-        .help(&MY_HELP);
+    let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
+    let intents = serenity::GatewayIntents::non_privileged();
 
-    // Login with a bot token from the environment
-    let token = env::var("TOKEN").expect("token");
-    let mut client = Client::builder(token)
-        .event_handler(Handler)
+    let framework = poise::Framework::builder()
+        .options(poise::FrameworkOptions {
+            commands: vec![
+                feedme(),
+                cronreminder(),
+                wutplay(),
+                compiling(),
+                pick(),
+                roll(),
+            ],
+            prefix_options: poise::PrefixFrameworkOptions {
+                prefix: Some(BOT_PREFIX.into()),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .setup(|ctx, _ready, framework| {
+            Box::pin(async move {
+                println!("Logged in as {}", _ready.user.name);
+                poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                Ok(Data {})
+            })
+        })
+        .build();
+
+    let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
-        .await
-        .expect("Error creating client");
-
-    // start listening for events by starting a single shard
-    if let Err(why) = client.start().await {
-        println!("An error occurred while running the client: {:?}", why);
-    }
+        .await;
+    client.unwrap().start().await.unwrap();
 }

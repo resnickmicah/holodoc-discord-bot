@@ -1,16 +1,10 @@
 use super::*;
 
-/**
- * Feedme
- */
-#[command]
-#[description = "Find a restaurant in Ann Arbor for lunch or dinner.\n\
-    With no args, selects a random restaurant type or specific restaurant.\n\
-    Possible args are healthy, unhealthy, junk, or local."]
-pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let food_options: HashSet<String> = if args.len() > 0 {
-        let health_level = args.single::<String>()?;
-        match health_level.as_str() {
+/// Find a restaurant in Ann Arbor for lunch or dinner.
+#[poise::command(slash_command)]
+pub async fn feedme(ctx: Context<'_>, health_level: Option<String>) -> Result<(), Error> {
+    let food_options: HashSet<String> = match health_level {
+        Some(health_level) => match health_level.as_str() {
             "healthy" => HashSet::from_iter(FEEDME.healthy.clone()),
             "unhealthy" => HashSet::from_iter(FEEDME.unhealthy.clone()),
             "junk" => HashSet::from_iter(FEEDME.junk.clone()),
@@ -18,9 +12,8 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
             _ => HashSet::from_iter(vec![
                 "Invalid argument. Please choose healthy, unhealthy, junk, or local.".to_string(),
             ]),
-        }
-    } else {
-        HashSet::from_iter(
+        },
+        None => HashSet::from_iter(
             [
                 FEEDME.healthy.clone(),
                 FEEDME.unhealthy.clone(),
@@ -28,7 +21,7 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
                 FEEDME.local.clone(),
             ]
             .concat(),
-        )
+        ),
     };
 
     let resp = Vec::from_iter(food_options)
@@ -36,9 +29,6 @@ pub async fn feedme(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
         .unwrap()
         .to_string();
 
-    if let Err(e) = msg.reply(ctx, resp).await {
-        println!("An error occurred while trying to process feedme: {:?}", e);
-    }
-
+    ctx.say(resp).await?;
     Ok(())
 }

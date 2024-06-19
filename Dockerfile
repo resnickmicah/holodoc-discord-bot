@@ -1,4 +1,4 @@
-FROM rust:1.68
+FROM rust:1.78
 
 WORKDIR /usr/src/holodoc
 COPY . ./
