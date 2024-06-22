@@ -2,7 +2,7 @@ use super::*;
 /// Pick a game to play. With no args, selects a random game among all tags.
 #[poise::command(
     slash_command,
-    aliases("wut2play", "watplay", "idkwut2play", "playwat", "whattoplay?")
+    aliases("w2p", "watplay", "idkwut2play", "playwat", "whattoplay?")
 )]
 pub async fn wutplay(ctx: Context<'_>, genre: Option<String>) -> Result<(), Error> {
     let game_options: HashSet<String> = match genre {
