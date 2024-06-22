@@ -4,18 +4,18 @@
 use std::collections::HashSet;
 use std::iter::FromIterator;
 
-use dotenv;
-
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use rand::Rng;
 
+use anyhow::Context as _;
+use poise::serenity_prelude as serenity;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
-
-use poise::serenity_prelude as serenity;
 use serenity::async_trait;
 use serenity::client::EventHandler;
+use shuttle_runtime::SecretStore;
+use shuttle_serenity::ShuttleSerenity;
 
 mod holodoc;
 use holodoc::{
@@ -45,11 +45,10 @@ struct Data {} // User data, which is stored and accessible in all command invoc
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-#[tokio::main]
-async fn main() {
-    dotenv::dotenv().ok();
+#[shuttle_runtime::main]
+async fn main(#[shuttle_runtime::Secrets] secrets: SecretStore) -> ShuttleSerenity {
 
-    let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
+    let token = secrets.get("DISCORD_TOKEN").context("missing DISCORD_TOKEN")?;
     let intents = serenity::GatewayIntents::non_privileged();
 
     let framework = poise::Framework::builder()
@@ -79,6 +78,7 @@ async fn main() {
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
-        .await;
-    client.unwrap().start().await.unwrap();
+        .await
+        .map_err(shuttle_runtime::CustomError::new)?;
+    Ok(client.into())
 }

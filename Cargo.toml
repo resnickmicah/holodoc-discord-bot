@@ -16,3 +16,6 @@ rand = "0.8"
 rand_core = "0.6" # cargo audit flagged rand_core 0.6.1
 lazy_static = "1.4.0"
 poise = "0.6.1"
+shuttle-runtime = "0.46.0"
+shuttle-serenity = "0.46.0"
+anyhow = "1.0.86"
