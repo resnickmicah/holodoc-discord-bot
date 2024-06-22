@@ -47,8 +47,9 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[shuttle_runtime::main]
 async fn main(#[shuttle_runtime::Secrets] secrets: SecretStore) -> ShuttleSerenity {
-
-    let token = secrets.get("DISCORD_TOKEN").context("missing DISCORD_TOKEN")?;
+    let token = secrets
+        .get("DISCORD_TOKEN")
+        .context("missing DISCORD_TOKEN")?;
     let intents = serenity::GatewayIntents::non_privileged();
 
     let framework = poise::Framework::builder()
