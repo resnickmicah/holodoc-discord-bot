@@ -1,8 +1,13 @@
 use super::*;
 
-/// roll [num dice] [num sides]
+/// roll e.g. with 1d6+7, num_dice = 1, num_sides = 6, bonus = 7
 #[poise::command(slash_command, aliases("r"))]
-pub async fn roll(ctx: Context<'_>, num_dice: u16, num_sides: u16) -> Result<(), Error> {
+pub async fn roll(
+    ctx: Context<'_>,
+    num_dice: u16,
+    num_sides: u16,
+    modifier: Option<i16>,
+) -> Result<(), Error> {
     let mut rolls: Vec<u16> = vec![];
     let mut roll_total: u16 = 0;
     for _ in 1..=num_dice {
@@ -11,7 +16,22 @@ pub async fn roll(ctx: Context<'_>, num_dice: u16, num_sides: u16) -> Result<(),
         rolls.push(roll_result);
         roll_total += roll_result;
     }
-    let response = format!("Roll results: {:?}, total: {}", rolls, roll_total);
+    let modifier_value = modifier.unwrap_or(0);
+    roll_total = roll_total.checked_add_signed(modifier_value).unwrap_or(1);
+
+    let response = if modifier_value != 0 {
+        let modifier_str: String = if modifier_value > 0 {
+            format!("+ {}", modifier_value)
+        } else {
+            format!("- {}", modifier_value.abs())
+        };
+        format!(
+            "Roll results: {:?} {}, total: {}",
+            rolls, modifier_str, roll_total
+        )
+    } else {
+        format!("Roll results: {:?}, total: {}", rolls, roll_total)
+    };
 
     ctx.say(response).await?;
     Ok(())
