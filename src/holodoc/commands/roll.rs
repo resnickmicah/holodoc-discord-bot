@@ -2,6 +2,15 @@ use std::convert::TryInto;
 
 use super::*;
 
+#[poise::command(prefix_command, aliases("r"))]
+pub async fn prefix_roll(
+    ctx: Context<'_>,
+    roll_expr: String,
+) -> Result<(), Error> {
+
+    Ok(())
+}
+
 /// roll e.g. with 1d6+7, num_dice = 1, num_sides = 6, bonus = 7
 #[poise::command(slash_command, aliases("r"))]
 pub async fn roll(
@@ -32,7 +41,10 @@ pub async fn roll(
 
     let flavor = match modified_roll {
         _ if roll_total == 1 && num_sides == 20 && num_dice == 1 => {
-            ":facepalm: **Crit fail!!** => "
+            ":headstone: **Crit fail!!** "
+        }
+        _ if roll_total == 20 && num_sides == 20 && num_dice == 1 => {
+            ":crab::tada::sparkles: **Nat 20 bby!!**  :sparkles::tada::crab: "
         }
         (i16::MIN..=0) if num_sides == 20 && num_dice == 1 => {
             ":scream::headstone: **__¡¡FAILtacular!!__** "
@@ -41,7 +53,7 @@ pub async fn roll(
             ":tada::sparkles: **Gurēto success, very naisu!** "
         }
         (40..=i16::MAX) if num_sides == 20 && num_dice == 1 => {
-            ":exploding_head::star_struck: **__GODLIKE!__**"
+            ":exploding_head::star_struck: **__GODLIKE!__** "
         }
         _ => ":game_die: Roll results: ",
     };
