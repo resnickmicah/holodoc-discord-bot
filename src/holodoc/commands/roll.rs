@@ -8,7 +8,7 @@ pub async fn roll(
     ctx: Context<'_>,
     num_dice: u16,
     num_sides: u16,
-    #[rename = "+"] modifier: Option<i16>,
+    modifier: Option<i16>,
 ) -> Result<(), Error> {
     let mut rolls: Vec<i16> = vec![];
     let mut roll_total: i16 = 0;
