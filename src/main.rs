@@ -61,6 +61,7 @@ async fn main(#[shuttle_runtime::Secrets] secrets: SecretStore) -> ShuttleSereni
                 compiling(),
                 pick(),
                 roll(),
+                rparams(),
             ],
             prefix_options: poise::PrefixFrameworkOptions {
                 prefix: Some(BOT_PREFIX.into()),

@@ -1,34 +1,121 @@
 use std::convert::TryInto;
+use serenity::model::id::GuildId;
 
 use super::*;
 
-#[poise::command(prefix_command, aliases("r"))]
-pub async fn prefix_roll(
+/// roll with 1d20+6, 1d20-3, 2d6, etc.
+#[poise::command(slash_command, aliases("rx"))]
+pub async fn roll(
     ctx: Context<'_>,
     roll_expr: String,
 ) -> Result<(), Error> {
+    let mut num_dice: Option<u16> = None;
+    let mut num_sides: Option<u16> = None;
+    let mut modifier: Option<i16> = None;
+    let mut rest: Option<&str> = None;
+    if let Some((nd, rst)) = roll_expr.split_once('d') {
+        num_dice = Some(str::parse::<u16>(nd).unwrap_or(0));
+        rest = Some(rst);
+        if num_dice == Some(0) {
+            ctx.say(format!(
+                "Invalid number of dice: {} from '{}'",
+                nd,
+                roll_expr
+            )).await?;
+            return Ok(());
+        }
+    } else {
+        ctx.say(format!(
+            "Missing 'd' from roll expression: {}",
+            roll_expr
+        )).await?;
+        return Ok(());
+    }
 
+    if let Some((ns, pos_mod)) = rest.unwrap().split_once('+') {
+        num_sides = Some(str::parse::<u16>(ns).unwrap_or(0));
+        if num_sides == Some(0) {
+            ctx.say(format!(
+                "Invalid number of sides: {} from '{}'",
+                ns,
+                roll_expr
+            )).await?;
+            return Ok(()); 
+        }
+        if pos_mod.len() > 0 {
+            modifier = Some(str::parse::<i16>(pos_mod).unwrap_or(0));
+            if modifier == Some(0) {
+                ctx.say(format!(
+                    "Invalid modifier: {} from '{}'",
+                    pos_mod,
+                    roll_expr
+                )).await?;
+                return Ok(());
+            }
+        }
+    } else if let Some((ns, neg_mod)) = rest.unwrap().split_once('-') {
+        num_sides = Some(str::parse::<u16>(ns).unwrap_or(0));
+        if num_sides == Some(0) {
+            ctx.say(format!(
+                "Invalid number of sides: {} from '{}'",
+                ns,
+                roll_expr
+            )).await?;
+            return Ok(());
+        }
+        if neg_mod.len() > 0 {
+            modifier = Some(str::parse::<i16>(neg_mod).unwrap_or(0) * -1);
+            if modifier == Some(0) {
+                ctx.say(format!(
+                    "Invalid modifier: {} from '{}'",
+                    neg_mod,
+                    roll_expr
+                )).await?;
+                return Ok(());
+            }
+        }
+    } else {
+        num_sides = Some(str::parse::<u16>(rest.unwrap()).unwrap_or(0));
+        if num_sides == Some(0) {
+            ctx.say(format!(
+                "Invalid number of sides: {} from '{}'",
+                rest.unwrap(),
+                roll_expr
+            )).await?;
+            return Ok(());
+        }
+    }
+    let roll_result = perform_roll(num_dice.unwrap(), num_sides.unwrap(), modifier);
+    // let user_name = (&ctx.author().name).to_string();
+    let user_nick = ctx.author();
+    let response = format!("{} rolled {}:\n{}", user_nick, roll_expr, roll_result);
+    ctx.say(response).await?;
     Ok(())
 }
 
 /// roll e.g. with 1d6+7, num_dice = 1, num_sides = 6, bonus = 7
-#[poise::command(slash_command, aliases("r"))]
-pub async fn roll(
+#[poise::command(slash_command)]
+pub async fn rparams(
     ctx: Context<'_>,
     num_dice: u16,
     num_sides: u16,
     modifier: Option<i16>,
 ) -> Result<(), Error> {
+    let response = perform_roll(num_dice, num_sides, modifier);
+
+    ctx.say(response).await?;
+    Ok(())
+}
+
+pub fn perform_roll(num_dice: u16, num_sides: u16, modifier: Option<i16>) -> String {
     let mut rolls: Vec<i16> = vec![];
     let mut roll_total: i16 = 0;
 
     if num_dice == 0 || num_sides == 0 {
-        ctx.say(format!(
+        return format!(
             "Invalid params: num_dice={} num_sides={}",
             num_dice, num_sides
-        ))
-        .await?;
-        return Ok(());
+        );
     }
     for _ in 1..=num_dice {
         let mut rng = thread_rng();
@@ -71,7 +158,5 @@ pub async fn roll(
     } else {
         format!("{} {:?}, total: {}", flavor, rolls, modified_roll)
     };
-
-    ctx.say(response).await?;
-    Ok(())
+    return response;
 }
