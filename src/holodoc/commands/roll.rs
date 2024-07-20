@@ -1,14 +1,11 @@
-use std::convert::TryInto;
 use serenity::model::id::GuildId;
+use std::convert::TryInto;
 
 use super::*;
 
 /// roll with 1d20+6, 1d20-3, 2d6, etc.
 #[poise::command(slash_command, aliases("rx"))]
-pub async fn roll(
-    ctx: Context<'_>,
-    roll_expr: String,
-) -> Result<(), Error> {
+pub async fn roll(ctx: Context<'_>, roll_expr: String) -> Result<(), Error> {
     let mut num_dice: Option<u16> = None;
     let mut num_sides: Option<u16> = None;
     let mut modifier: Option<i16> = None;
@@ -19,16 +16,14 @@ pub async fn roll(
         if num_dice == Some(0) {
             ctx.say(format!(
                 "Invalid number of dice: {} from '{}'",
-                nd,
-                roll_expr
-            )).await?;
+                nd, roll_expr
+            ))
+            .await?;
             return Ok(());
         }
     } else {
-        ctx.say(format!(
-            "Missing 'd' from roll expression: {}",
-            roll_expr
-        )).await?;
+        ctx.say(format!("Missing 'd' from roll expression: {}", roll_expr))
+            .await?;
         return Ok(());
     }
 
@@ -37,19 +32,19 @@ pub async fn roll(
         if num_sides == Some(0) {
             ctx.say(format!(
                 "Invalid number of sides: {} from '{}'",
-                ns,
-                roll_expr
-            )).await?;
-            return Ok(()); 
+                ns, roll_expr
+            ))
+            .await?;
+            return Ok(());
         }
         if pos_mod.len() > 0 {
             modifier = Some(str::parse::<i16>(pos_mod).unwrap_or(0));
             if modifier == Some(0) {
                 ctx.say(format!(
                     "Invalid modifier: {} from '{}'",
-                    pos_mod,
-                    roll_expr
-                )).await?;
+                    pos_mod, roll_expr
+                ))
+                .await?;
                 return Ok(());
             }
         }
@@ -58,9 +53,9 @@ pub async fn roll(
         if num_sides == Some(0) {
             ctx.say(format!(
                 "Invalid number of sides: {} from '{}'",
-                ns,
-                roll_expr
-            )).await?;
+                ns, roll_expr
+            ))
+            .await?;
             return Ok(());
         }
         if neg_mod.len() > 0 {
@@ -68,9 +63,9 @@ pub async fn roll(
             if modifier == Some(0) {
                 ctx.say(format!(
                     "Invalid modifier: {} from '{}'",
-                    neg_mod,
-                    roll_expr
-                )).await?;
+                    neg_mod, roll_expr
+                ))
+                .await?;
                 return Ok(());
             }
         }
@@ -81,7 +76,8 @@ pub async fn roll(
                 "Invalid number of sides: {} from '{}'",
                 rest.unwrap(),
                 roll_expr
-            )).await?;
+            ))
+            .await?;
             return Ok(());
         }
     }
@@ -127,9 +123,7 @@ pub fn perform_roll(num_dice: u16, num_sides: u16, modifier: Option<i16>) -> Str
     let modified_roll = roll_total + modifier_value;
 
     let flavor = match modified_roll {
-        _ if roll_total == 1 && num_sides == 20 && num_dice == 1 => {
-            ":headstone: **Crit fail!!** "
-        }
+        _ if roll_total == 1 && num_sides == 20 && num_dice == 1 => ":headstone: **Crit fail!!** ",
         _ if roll_total == 20 && num_sides == 20 && num_dice == 1 => {
             ":crab::tada::sparkles: **Nat 20 bby!!**  :sparkles::tada::crab: "
         }
