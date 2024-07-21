@@ -1,4 +1,3 @@
-use serenity::model::id::GuildId;
 use std::convert::TryInto;
 
 use super::*;
