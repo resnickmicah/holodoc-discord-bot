@@ -1,4 +1,5 @@
 use super::*;
+use super::data::WUTPLAY;
 /// Pick a game to play. With no args, selects a random game among all tags.
 #[poise::command(
     slash_command,

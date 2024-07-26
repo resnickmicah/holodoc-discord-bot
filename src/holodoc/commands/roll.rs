@@ -89,18 +89,18 @@ pub async fn roll(ctx: Context<'_>, roll_expr: String) -> Result<(), Error> {
 }
 
 /// roll e.g. with 1d6+7, num_dice = 1, num_sides = 6, bonus = 7
-#[poise::command(slash_command)]
-pub async fn rparams(
-    ctx: Context<'_>,
-    num_dice: u16,
-    num_sides: u16,
-    modifier: Option<i16>,
-) -> Result<(), Error> {
-    let response = perform_roll(num_dice, num_sides, modifier);
+// #[poise::command(slash_command)]
+// pub async fn rparams(
+//     ctx: Context<'_>,
+//     num_dice: u16,
+//     num_sides: u16,
+//     modifier: Option<i16>,
+// ) -> Result<(), Error> {
+//     let response = perform_roll(num_dice, num_sides, modifier);
 
-    ctx.say(response).await?;
-    Ok(())
-}
+//     ctx.say(response).await?;
+//     Ok(())
+// }
 
 pub fn perform_roll(num_dice: u16, num_sides: u16, modifier: Option<i16>) -> String {
     let mut rolls: Vec<i16> = vec![];

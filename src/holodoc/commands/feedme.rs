@@ -1,4 +1,5 @@
 use super::*;
+use super::data::FEEDME;
 
 /// Find a restaurant in Ann Arbor for lunch or dinner.
 #[poise::command(slash_command)]

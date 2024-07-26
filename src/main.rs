@@ -18,11 +18,7 @@ use shuttle_runtime::SecretStore;
 use shuttle_serenity::ShuttleSerenity;
 
 mod holodoc;
-use holodoc::{
-    commands::{compiling::*, cronreminder::*, feedme::*, pick::*, roll::*, wutplay::*},
-    data::*,
-    structs::{FeedMe, WutPlay},
-};
+use holodoc::commands::{compiling::*, feedme::*, pick::*, roll::*, wutplay::*};
 
 #[macro_use]
 extern crate lazy_static;
@@ -54,15 +50,7 @@ async fn main(#[shuttle_runtime::Secrets] secrets: SecretStore) -> ShuttleSereni
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![
-                feedme(),
-                cronreminder(),
-                wutplay(),
-                compiling(),
-                pick(),
-                roll(),
-                rparams(),
-            ],
+            commands: vec![feedme(), wutplay(), compiling(), pick(), roll()],
             prefix_options: poise::PrefixFrameworkOptions {
                 prefix: Some(BOT_PREFIX.into()),
                 ..Default::default()
