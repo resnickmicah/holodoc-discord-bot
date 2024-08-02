@@ -1,5 +1,6 @@
 use super::*;
 use super::data::FEEDME;
+use super::commands::errors::HolodocErrors;
 
 /// Find a restaurant in Ann Arbor for lunch or dinner.
 #[poise::command(slash_command)]
@@ -25,11 +26,11 @@ pub async fn feedme(ctx: Context<'_>, health_level: Option<String>) -> Result<()
         ),
     };
 
-    let resp = Vec::from_iter(food_options)
+    let food_options = Vec::from_iter(food_options);
+    let resp = food_options
         .choose(&mut rand::thread_rng())
-        .unwrap()
-        .to_string();
+        .ok_or_else(|| HolodocErrors::RNGFailure)?;
 
-    ctx.say(resp).await?;
+    ctx.say(resp.to_string()).await?;
     Ok(())
 }
