@@ -1,5 +1,5 @@
-use super::*;
 use super::structs::{FeedMe, WutPlay};
+use super::*;
 
 lazy_static! {
     pub static ref FEEDME: FeedMe = {
