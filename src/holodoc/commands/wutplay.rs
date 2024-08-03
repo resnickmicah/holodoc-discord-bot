@@ -1,5 +1,7 @@
-use super::*;
+use errors::HolodocErrors;
+
 use super::data::WUTPLAY;
+use super::*;
 /// Pick a game to play. With no args, selects a random game among all tags.
 #[poise::command(
     slash_command,
@@ -41,7 +43,7 @@ pub async fn wutplay(ctx: Context<'_>, genre: Option<String>) -> Result<(), Erro
 
     let resp = Vec::from_iter(game_options)
         .choose(&mut rand::thread_rng())
-        .unwrap()
+        .ok_or_else(|| HolodocErrors::RNGFailure)?
         .to_string();
 
     ctx.say(resp).await?;
