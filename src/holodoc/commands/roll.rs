@@ -11,6 +11,19 @@ struct RollExpression {
     modifier: i16,
 }
 
+impl std::fmt::Display for RollExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let signed_modf = if self.modifier > 0 {
+            format!("+{}", self.modifier)
+        } else if self.modifier < 0 {
+            format!("+{}", self.modifier.abs())
+        } else {
+            "".to_string()
+        };
+        write!(f, "{}d{}{}", self.num_dice, self.num_sides, signed_modf)
+    }
+}
+
 impl TryFrom<&str> for RollExpression {
     type Error = HolodocErrors;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -44,9 +57,9 @@ impl TryFrom<&str> for RollExpression {
 pub async fn roll(ctx: Context<'_>, roll_expr: String) -> Result<(), Error> {
     match RollExpression::try_from(roll_expr.as_str()) {
         Ok(rexp) => {
-            let roll_result = perform_roll(rexp);
+            let roll_result = perform_roll(&rexp);
             let user_nick = ctx.author();
-            let response = format!("{} rolled {}:\n{}", user_nick, &roll_expr, roll_result);
+            let response = format!("{} rolled {}:\n{}", user_nick, rexp, roll_result);
             ctx.say(response).await?;
             Ok(())
         }
@@ -57,7 +70,7 @@ pub async fn roll(ctx: Context<'_>, roll_expr: String) -> Result<(), Error> {
     }
 }
 
-fn perform_roll(rexpr: RollExpression) -> String {
+fn perform_roll(rexpr: &RollExpression) -> String {
     let mut rolls: Vec<i16> = vec![];
     let mut roll_total: i16 = 0;
 
