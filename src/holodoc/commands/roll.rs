@@ -1,134 +1,97 @@
-use std::convert::TryInto;
+use std::convert::TryFrom;
+
+use errors::HolodocErrors;
 
 use super::*;
+
+#[derive(Debug)]
+struct RollExpression {
+    num_dice: u16,
+    num_sides: u16,
+    modifier: i16,
+}
+
+impl TryFrom<&str> for RollExpression {
+    type Error = HolodocErrors;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let parts = value.split(['d', '+', '-']).collect::<Vec<&str>>();
+        if parts.len() != 2 || parts.len() != 3 {
+            return Err(HolodocErrors::RollExprFormatError(value.to_string()));
+        }
+        let num_dice: u16 = str::parse::<u16>(parts[0])
+            .map_err(|_| HolodocErrors::RollExprValueError("number of dice".to_string(), parts[0].to_string()))?;
+        let num_sides: u16 = str::parse::<u16>(parts[1])
+            .map_err(|_| HolodocErrors::RollExprValueError("number of sides".to_string(), parts[1].to_string()))?;
+        let modifier: i16 = if parts.len() == 3 {
+            let mod_sign = if value.contains('-') { -1 } else { 1 };
+            let mod_value = str::parse::<i16>(parts[2])
+                .map_err(|_| HolodocErrors::RollExprValueError("modifier".to_string(), parts[2].to_string()))?;
+            mod_value * mod_sign
+        } else {
+            0
+        };
+        Ok(RollExpression {
+            num_dice,
+            num_sides,
+            modifier,
+        })
+    }
+}
 
 /// roll with 1d20+6, 1d20-3, 2d6, etc.
 #[poise::command(slash_command, aliases("rx"))]
 pub async fn roll(ctx: Context<'_>, roll_expr: String) -> Result<(), Error> {
-    let mut num_dice: Option<u16> = None;
-    let mut num_sides: Option<u16> = None;
-    let mut modifier: Option<i16> = None;
-    let mut rest: Option<&str> = None;
-    if let Some((nd, rst)) = roll_expr.split_once('d') {
-        num_dice = Some(str::parse::<u16>(nd).unwrap_or(0));
-        rest = Some(rst);
-        if num_dice == Some(0) {
-            ctx.say(format!(
-                "Invalid number of dice: {} from '{}'",
-                nd, roll_expr
-            ))
-            .await?;
-            return Ok(());
+    match RollExpression::try_from(roll_expr.as_str()) {
+        Ok(rexp) => {
+            let roll_result = perform_roll(rexp);
+            let user_nick = ctx.author();
+            let response = format!("{} rolled {}:\n{}", user_nick, &roll_expr, roll_result);
+            ctx.say(response).await?;
+            Ok(())
         }
-    } else {
-        ctx.say(format!("Missing 'd' from roll expression: {}", roll_expr))
-            .await?;
-        return Ok(());
-    }
-
-    if let Some((ns, pos_mod)) = rest.unwrap().split_once('+') {
-        num_sides = Some(str::parse::<u16>(ns).unwrap_or(0));
-        if num_sides == Some(0) {
-            ctx.say(format!(
-                "Invalid number of sides: {} from '{}'",
-                ns, roll_expr
-            ))
-            .await?;
-            return Ok(());
-        }
-        if pos_mod.len() > 0 {
-            modifier = Some(str::parse::<i16>(pos_mod).unwrap_or(0));
-            if modifier == Some(0) {
-                ctx.say(format!(
-                    "Invalid modifier: {} from '{}'",
-                    pos_mod, roll_expr
-                ))
-                .await?;
-                return Ok(());
-            }
-        }
-    } else if let Some((ns, neg_mod)) = rest.unwrap().split_once('-') {
-        num_sides = Some(str::parse::<u16>(ns).unwrap_or(0));
-        if num_sides == Some(0) {
-            ctx.say(format!(
-                "Invalid number of sides: {} from '{}'",
-                ns, roll_expr
-            ))
-            .await?;
-            return Ok(());
-        }
-        if neg_mod.len() > 0 {
-            modifier = Some(str::parse::<i16>(neg_mod).unwrap_or(0) * -1);
-            if modifier == Some(0) {
-                ctx.say(format!(
-                    "Invalid modifier: {} from '{}'",
-                    neg_mod, roll_expr
-                ))
-                .await?;
-                return Ok(());
-            }
-        }
-    } else {
-        num_sides = Some(str::parse::<u16>(rest.unwrap()).unwrap_or(0));
-        if num_sides == Some(0) {
-            ctx.say(format!(
-                "Invalid number of sides: {} from '{}'",
-                rest.unwrap(),
-                roll_expr
-            ))
-            .await?;
-            return Ok(());
+        Err(rexp_err) => {
+            ctx.say(rexp_err.to_string()).await?;
+            Ok(())
         }
     }
-    let roll_result = perform_roll(num_dice.unwrap(), num_sides.unwrap(), modifier);
-    // let user_name = (&ctx.author().name).to_string();
-    let user_nick = ctx.author();
-    let response = format!("{} rolled {}:\n{}", user_nick, roll_expr, roll_result);
-    ctx.say(response).await?;
-    Ok(())
 }
 
-pub fn perform_roll(num_dice: u16, num_sides: u16, modifier: Option<i16>) -> String {
+fn perform_roll(rexpr: RollExpression) -> String {
     let mut rolls: Vec<i16> = vec![];
     let mut roll_total: i16 = 0;
 
-    if num_dice == 0 || num_sides == 0 {
-        return format!(
-            "Invalid params: num_dice={} num_sides={}",
-            num_dice, num_sides
-        );
-    }
-    for _ in 1..=num_dice {
+    for _ in 1..=rexpr.num_dice {
         let mut rng = thread_rng();
-        let roll_result: i16 = rng.gen_range(1..=num_sides).try_into().unwrap();
+        let roll_result: i16 = rng.gen_range(1..=rexpr.num_sides).try_into().unwrap();
         rolls.push(roll_result);
         roll_total += roll_result;
     }
-    let modifier_value = modifier.unwrap_or(0);
-    let modified_roll = roll_total + modifier_value;
+    let modified_roll = roll_total + rexpr.modifier;
 
     let flavor = match modified_roll {
-        _ if roll_total == 1 && num_sides == 20 && num_dice == 1 => ":headstone: **Crit fail!!** ",
-        _ if roll_total == 20 && num_sides == 20 && num_dice == 1 => {
+        _ if roll_total == 1 && rexpr.num_sides == 20 && rexpr.num_dice == 1 => {
+            ":headstone: **Crit fail!!** "
+        }
+        _ if roll_total == 20 && rexpr.num_sides == 20 && rexpr.num_dice == 1 => {
             ":crab::tada::sparkles: **Nat 20 bby!!**  :sparkles::tada::crab: "
         }
-        (i16::MIN..=0) if num_sides == 20 && num_dice == 1 => {
+        (i16::MIN..=0) if rexpr.num_sides == 20 && rexpr.num_dice == 1 => {
             ":scream::headstone: **__¡¡FAILtacular!!__** "
         }
-        (20..=39) if num_sides == 20 && num_dice == 1 => {
+        (20..=39) if rexpr.num_sides == 20 && rexpr.num_dice == 1 => {
             ":tada::sparkles: **Gurēto success, very naisu!** "
         }
-        (40..=i16::MAX) if num_sides == 20 && num_dice == 1 => {
+        (40..=i16::MAX) if rexpr.num_sides == 20 && rexpr.num_dice == 1 => {
             ":exploding_head::star_struck: **__GODLIKE!__** "
         }
         _ => ":game_die: Roll results: ",
     };
 
-    let response = if modifier_value != 0 {
-        let modifier_str: String = if modifier_value > 0 {
-            format!("+ {}", modifier_value)
+    let response = if rexpr.modifier != 0 {
+        let modifier_str: String = if rexpr.modifier > 0 {
+            format!("+ {}", rexpr.modifier)
         } else {
-            format!("- {}", modifier_value.abs())
+            format!("- {}", rexpr.modifier.abs())
         };
         format!(
             "{} {:?} {}, total: {}",
