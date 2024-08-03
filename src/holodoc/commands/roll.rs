@@ -14,8 +14,9 @@ struct RollExpression {
 impl TryFrom<&str> for RollExpression {
     type Error = HolodocErrors;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let parts = value.split(['d', '+', '-']).collect::<Vec<&str>>();
-        if parts.len() != 2 || parts.len() != 3 {
+        let parts = value.split(&['d', '+', '-'][..]).collect::<Vec<&str>>();
+        println!("Split roll parts {:?}", parts);
+        if parts.len() != 2 && parts.len() != 3 {
             return Err(HolodocErrors::RollExprFormatError(value.to_string()));
         }
         let num_dice: u16 = str::parse::<u16>(parts[0])
