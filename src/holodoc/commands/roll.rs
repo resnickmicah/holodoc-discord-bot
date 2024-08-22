@@ -32,14 +32,17 @@ impl TryFrom<&str> for RollExpression {
         if parts.len() != 2 && parts.len() != 3 {
             return Err(HolodocErrors::RollExprFormatError(value.to_string()));
         }
-        let num_dice: u16 = str::parse::<u16>(parts[0])
-            .map_err(|_| HolodocErrors::RollExprValueError("number of dice".to_string(), parts[0].to_string()))?;
-        let num_sides: u16 = str::parse::<u16>(parts[1])
-            .map_err(|_| HolodocErrors::RollExprValueError("number of sides".to_string(), parts[1].to_string()))?;
+        let num_dice: u16 = str::parse::<u16>(parts[0]).map_err(|_| {
+            HolodocErrors::RollExprValueError("number of dice".to_string(), parts[0].to_string())
+        })?;
+        let num_sides: u16 = str::parse::<u16>(parts[1]).map_err(|_| {
+            HolodocErrors::RollExprValueError("number of sides".to_string(), parts[1].to_string())
+        })?;
         let modifier: i16 = if parts.len() == 3 {
             let mod_sign = if value.contains('-') { -1 } else { 1 };
-            let mod_value = str::parse::<i16>(parts[2])
-                .map_err(|_| HolodocErrors::RollExprValueError("modifier".to_string(), parts[2].to_string()))?;
+            let mod_value = str::parse::<i16>(parts[2]).map_err(|_| {
+                HolodocErrors::RollExprValueError("modifier".to_string(), parts[2].to_string())
+            })?;
             mod_value * mod_sign
         } else {
             0
