@@ -115,7 +115,11 @@ fn get_random_releases(releases: Vec<Album>) -> Vec<Album> {
     // let mut random_releases: Vec<Album> = Vec::new();
 
     let mut rng = &mut rand::thread_rng();
-    let random_releases: Vec<Album> = releases.clone().choose_multiple(&mut rng, 4).cloned().collect();
+    let random_releases: Vec<Album> = releases
+        .clone()
+        .choose_multiple(&mut rng, 4)
+        .cloned()
+        .collect();
 
     random_releases
 }
@@ -167,16 +171,15 @@ pub async fn get_all_releases() -> Result<Vec<Album>, Box<dyn std::error::Error>
     Ok(all_releases)
 }
 
-
 pub fn print_releases(releases: Vec<Album>) -> String {
     let mut output = String::new();
-    
+
     let random_releases: Vec<Album> = get_random_releases(releases);
 
     for release in random_releases {
         let rel_or_err_str = match format_release(release) {
             Ok(fmtrel) => fmtrel,
-            Err(e) => e.to_string()
+            Err(e) => e.to_string(),
         };
         output.push_str(&format!("{}\n", rel_or_err_str));
     }
