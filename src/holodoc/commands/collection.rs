@@ -174,8 +174,11 @@ pub fn print_releases(releases: Vec<Album>) -> String {
     let random_releases: Vec<Album> = get_random_releases(releases);
 
     for release in random_releases {
-        let release = format_release(release);
-        output.push_str(&format!("{:?}\n", release));
+        let rel_or_err_str = match format_release(release) {
+            Ok(fmtrel) => fmtrel,
+            Err(e) => e.to_string()
+        };
+        output.push_str(&format!("{}\n", rel_or_err_str));
     }
     output
 }
